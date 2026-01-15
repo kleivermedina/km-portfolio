@@ -7,10 +7,11 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700;900&display=swap" rel="stylesheet">
     <style>
         :root {
-            --primary-yellow: #ffcc00;
+            --primary-yellow: #739CB2;
             --bg-dark: #121212;
             --glass-bg: rgba(255, 255, 255, 0.03);
             --glass-border: rgba(255, 255, 255, 0.1);
+            --cursor-size: 20px;
         }
 
         * {
@@ -18,21 +19,56 @@
             padding: 0;
             box-sizing: border-box;
             font-family: 'Inter', sans-serif;
+            /* Ocultamos el cursor por defecto para usar el nuestro */
+            cursor: none; 
         }
 
         body {
             background-color: var(--bg-dark);
-            /* Gradiente de luz naranja en el fondo */
-            background-image: radial-gradient(circle at 70% 30%, rgba(255, 140, 0, 0.3) 0%, rgba(18, 18, 18, 1) 60%);
+            background-image: radial-gradient(circle at 70% 30%, rgba(115, 156, 178, 0.3) 0%, rgba(17, 21, 25, 1) 60%);
             height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
             color: white;
-            overflow: hidden;
+            overflow: hidden; /* Mantiene el look app en desktop */
         }
 
-        /* Contenedor Principal (Efecto Cristal) */
+        /* --- CURSOR PERSONALIZADO --- */
+        .cursor-dot,
+        .cursor-outline {
+            position: fixed;
+            top: 0;
+            left: 0;
+            transform: translate(-50%, -50%);
+            border-radius: 50%;
+            z-index: 9999;
+            pointer-events: none;
+        }
+
+        .cursor-dot {
+            width: 8px;
+            height: 8px;
+            background-color: white;
+        }
+
+        .cursor-outline {
+            width: 40px;
+            height: 40px;
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            transition: width 0.2s, height 0.2s, background-color 0.2s;
+        }
+
+        /* Clase para cuando hacemos hover en un link */
+        body.hovering .cursor-outline {
+            width: 60px;
+            height: 60px;
+            background-color: rgba(115, 156, 178, 0.1);
+            border-color: var(--primary-yellow);
+        }
+
+        /* --- ESTILOS PRINCIPALES --- */
+
         .main-card {
             width: 90%;
             max-width: 1100px;
@@ -48,9 +84,9 @@
             flex-direction: column;
             justify-content: space-between;
             box-shadow: 0 25px 50px rgba(0,0,0,0.5);
+            transition: height 0.3s ease;
         }
 
-        /* Header: Status y Botón CV */
         .header {
             display: flex;
             justify-content: space-between;
@@ -69,9 +105,9 @@
             content: "";
             width: 8px;
             height: 8px;
-            background: #4caf50;
+            background: #FF4444;
             border-radius: 50%;
-            box-shadow: 0 0 10px #4caf50;
+            box-shadow: 0 0 10px #AD2D2D;
         }
 
         .btn-cv {
@@ -84,8 +120,12 @@
             font-size: 0.7rem;
             transition: transform 0.2s;
         }
+        
+        /* Efecto hover en botones para que funcione con el cursor custom */
+        a:hover, button:hover {
+            cursor: none;
+        }
 
-        /* Contenido Central */
         .hero {
             z-index: 2;
         }
@@ -106,7 +146,6 @@
             margin-bottom: 40px;
         }
 
-        /* Información de Contacto */
         .contact-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
@@ -124,7 +163,6 @@
 
         .info-item span { color: var(--primary-yellow); }
 
-        /* Navegación Inferior (Pill Menu) */
         .navbar {
             align-self: center;
             background: rgba(0, 0, 0, 0.4);
@@ -133,6 +171,9 @@
             display: flex;
             gap: 5px;
             border: 1px solid var(--glass-border);
+            /* Evitar que se rompa en móviles muy pequeños */
+            flex-wrap: wrap; 
+            justify-content: center;
         }
 
         .nav-item {
@@ -153,48 +194,120 @@
             font-weight: bold;
         }
 
-        /* Imagen de Fondo (Persona) */
-        .profile-img {
-            position: absolute;
-            right: 50px;
-            bottom: 0;
-            height: 90%;
-            z-index: 1;
-            filter: drop-shadow(0 0 20px rgba(0,0,0,0.5));
-            /* Aquí pondrías el link a tu imagen sin fondo */
-        }
+        /* --- RESPONSIVE MOBILE --- */
+        @media (max-width: 768px) {
+            body {
+                /* Permitir scroll en móvil si el contenido es largo */
+                height: auto;
+                min-height: 100vh;
+                overflow-y: auto;
+                padding: 20px 0;
+            }
 
+            .main-card {
+                width: 95%;
+                height: auto; /* Altura automática para que quepa todo */
+                min-height: 85vh;
+                padding: 30px 20px;
+                gap: 40px; /* Espacio entre elementos flex */
+            }
+
+            .name {
+                font-size: 3.5rem; /* Ajuste para que no rompa la pantalla */
+                margin-bottom: 25px;
+            }
+
+            .contact-grid {
+                grid-template-columns: 1fr; /* Una sola columna */
+                gap: 15px;
+            }
+
+            .navbar {
+                width: 100%;
+                margin-top: 20px;
+            }
+
+            .nav-item {
+                padding: 10px 15px; /* Botones más pequeños */
+                font-size: 0.75rem;
+            }
+            
+            /* Opcional: Ocultar cursor custom en móviles táctiles */
+            @media (pointer: coarse) {
+                .cursor-dot, .cursor-outline {
+                    display: none;
+                }
+                * {
+                    cursor: auto; /* Restaurar cursor nativo */
+                }
+            }
+        }
     </style>
 </head>
 <body>
 
+    <div class="cursor-dot" id="cursor-dot"></div>
+    <div class="cursor-outline" id="cursor-outline"></div>
+
     <div class="main-card">
         <div class="header">
-            <div class="status">Open to work</div>
-            <a href="#" class="btn-cv">Download CV</a>
+            <div class="status">No Disponible</div>
+            <a href="#" class="btn-cv hover-target">Descargar CV</a>
         </div>
 
         <div class="hero">
-            <span class="role">UX/UI Designer</span>
-            <h1 class="name">Tyrone<br>Brooks</h1>
+            <span class="role">Editor de Vídeo</span>
+            <h1 class="name">Kleiver<br>Medina</h1>
 
             <div class="contact-grid">
-                <div class="info-item"><span>📧</span> tyrone.brooks@gmail.com</div>
-                <div class="info-item"><span>🔗</span> linkedin.com/in/tyrone</div>
-                <div class="info-item"><span>📞</span> +1 404-555-9876</div>
-                <div class="info-item"><span>📍</span> Atlanta, US</div>
+                <div class="info-item"><span>📧</span> kleivermedina2004@gmail.com</div>
+                <div class="info-item"><span>🔗</span> linkedin.com/in/kleivermedina</div>
+                <div class="info-item"><span>📞</span> +58 412-471-8440</div>
+                <div class="info-item"><span>📍</span> Venezuela</div>
             </div>
         </div>
 
-        <img src="https://via.placeholder.com/600x800/000000/000000?text=+" alt="Profile" class="profile-img">
-
         <nav class="navbar">
-            <a href="#" class="nav-item active">🏠 Home</a>
-            <a href="#" class="nav-item">💼 Summary</a>
-            <a href="#" class="nav-item">📄 Experience</a>
-            <a href="#" class="nav-item">⚡ Skills</a>
+            <a href="#" class="nav-item active hover-target">Home</a>
+            <a href="#" class="nav-item hover-target">Summary</a>
+            <a href="#" class="nav-item hover-target">Experience</a>
+            <a href="#" class="nav-item hover-target">Skills</a>
         </nav>
     </div>
+
+    <script>
+        // Lógica del Cursor Personalizado
+        const cursorDot = document.getElementById("cursor-dot");
+        const cursorOutline = document.getElementById("cursor-outline");
+
+        // Movimiento
+        window.addEventListener("mousemove", function(e) {
+            const posX = e.clientX;
+            const posY = e.clientY;
+
+            // El punto sigue al mouse instantáneamente
+            cursorDot.style.left = `${posX}px`;
+            cursorDot.style.top = `${posY}px`;
+
+            // El círculo exterior tiene una pequeña animación de "delay"
+            cursorOutline.animate({
+                left: `${posX}px`,
+                top: `${posY}px`
+            }, { duration: 500, fill: "forwards" });
+        });
+
+        // Efecto Hover en Enlaces
+        const hoverTargets = document.querySelectorAll("a, .hover-target");
+
+        hoverTargets.forEach(target => {
+            target.addEventListener("mouseenter", () => {
+                document.body.classList.add("hovering");
+            });
+            target.addEventListener("mouseleave", () => {
+                document.body.classList.remove("hovering");
+            });
+        });
+    </script>
 
 </body>
 </html>
